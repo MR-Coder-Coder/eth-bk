@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom'; // Add Navigate for redirection
 import Header from './components/Header';
 import WalletForm from './components/WalletForm';
 import TransactionList from './components/TransactionList';
@@ -61,7 +61,8 @@ function MainContent() {
               )}
             </>
           ) : (
-            <p>Please log in to view your transactions.</p>
+            // If user is not logged in, redirect to the login page
+            <Navigate to="/login" />
           )
         } />
       </Routes>
