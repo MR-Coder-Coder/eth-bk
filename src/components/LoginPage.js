@@ -26,7 +26,7 @@ const LoginPage = () => {
       {error && <p className="error">{error}</p>}
       <form onSubmit={handleLogin}>
         <div>
-          <label>Email:</label>
+          <label>Email</label>
           <input 
             type="email" 
             value={email} 
@@ -35,7 +35,7 @@ const LoginPage = () => {
           />
         </div>
         <div>
-          <label>Password:</label>
+          <label>Password</label>
           <input 
             type="password" 
             value={password} 

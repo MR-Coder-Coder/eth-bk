@@ -44,11 +44,15 @@
   box-sizing: border-box;
 }
 
+/* General styles */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
-  line-height: 1.6;
+  background-color: #f0f0f0; /* Light background to mimic the second screenshot */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full viewport height */
+  margin: 0;
 }
 
 /* App component styles */
@@ -201,31 +205,39 @@ p.error {
   text-decoration: underline;
 }
 
-/* Login page styles */
+/* Login page */
 .login-page {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  padding: 40px; /* Larger padding for a card-like feel */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Softer shadow for the card */
+  width: 350px; /* Set a fixed width for the card */
+  margin: 20px;
+  text-align: center; /* Center text */
 }
 
 .login-page h2 {
   margin-bottom: 20px;
+  font-size: 1.5rem;
   color: #333;
+}
+
+.login-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between form inputs */
 }
 
 .login-page form div {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .login-page label {
-  display: block;
-  font-weight: bold;
+  font-size: 1rem;
+  color: #555;
   margin-bottom: 5px;
-  color: #333;
 }
 
 .login-page input {
@@ -233,21 +245,27 @@ p.error {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 1rem;
 }
 
 .login-page button {
-  width: 100%;
-  padding: 10px;
   background-color: #61dafb;
-  color: white;
   border: none;
+  color: white;
+  padding: 12px;
   font-size: 1rem;
-  cursor: pointer;
   border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .login-page button:hover {
   background-color: #21a1f1;
+}
+
+.login-page .error {
+  color: red;
+  margin-bottom: 20px;
 }
 
 /* Responsive styles */
