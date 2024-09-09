@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import WalletForm from './components/WalletForm';
 import TransactionList from './components/TransactionList';
 import BalanceDisplay from './components/BalanceDisplay';
-import LoginPage from './components/LoginPage';  // Import LoginPage
+import LoginPage from './components/LoginPage';
 import { fetchTransactions } from './utils/api';
-import { auth } from './firebase/config';  // Add Firebase auth import
+import { auth } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import './App.css';
 
@@ -42,7 +42,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Header />
+        {user && <Header />} {/* Show Header only if the user is logged in */}
         <Routes>
           <Route path="/login" element={<LoginPage />} />  {/* Add Login Route */}
           <Route path="/" element={
