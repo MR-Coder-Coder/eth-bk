@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'; // Import useLocation
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import WalletForm from './components/WalletForm';
 import TransactionList from './components/TransactionList';
@@ -10,13 +10,14 @@ import { auth } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import './App.css';
 
-function App() {
+// Create a wrapper component for the routes
+function MainContent() {
   const [walletAddress, setWalletAddress] = useState('');
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null); // Track authenticated user
-  const location = useLocation(); // Use location to track the current route
+  const [user, setUser] = useState(null);
+  const location = useLocation(); // useLocation can be used safely here inside the Router
 
   useEffect(() => {
     // Monitor authentication state
@@ -41,31 +42,37 @@ function App() {
   };
 
   return (
+    <div className="App">
+      {/* Only show Header if the current route is NOT login */}
+      {location.pathname !== '/login' && user && <Header />}
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={
+          user ? (  // If user is logged in, show the main content
+            <>
+              <WalletForm onSubmit={handleSubmit} />
+              {loading && <p>Loading...</p>}
+              {error && <p className="error">{error}</p>}
+              {transactions.length > 0 && (
+                <>
+                  <BalanceDisplay transactions={transactions} walletAddress={walletAddress} />
+                  <TransactionList transactions={transactions} walletAddress={walletAddress} />
+                </>
+              )}
+            </>
+          ) : (
+            <p>Please log in to view your transactions.</p>
+          )
+        } />
+      </Routes>
+    </div>
+  );
+}
+
+function App() {
+  return (
     <Router>
-      <div className="App">
-        {/* Only show Header if the current route is NOT login */}
-        {location.pathname !== '/login' && user && <Header />}
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />  {/* Add Login Route */}
-          <Route path="/" element={
-            user ? (  // If user is logged in, show the main content
-              <>
-                <WalletForm onSubmit={handleSubmit} />
-                {loading && <p>Loading...</p>}
-                {error && <p className="error">{error}</p>}
-                {transactions.length > 0 && (
-                  <>
-                    <BalanceDisplay transactions={transactions} walletAddress={walletAddress} />
-                    <TransactionList transactions={transactions} walletAddress={walletAddress} />
-                  </>
-                )}
-              </>
-            ) : (
-              <p>Please log in to view your transactions.</p>
-            )
-          } />
-        </Routes>
-      </div>
+      <MainContent /> {/* Main content with location and routes */}
     </Router>
   );
 }
