@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'; // Import useLocation
 import Header from './components/Header';
 import WalletForm from './components/WalletForm';
 import TransactionList from './components/TransactionList';
@@ -16,6 +16,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null); // Track authenticated user
+  const location = useLocation(); // Use location to track the current route
 
   useEffect(() => {
     // Monitor authentication state
@@ -42,7 +43,8 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {user && <Header />} {/* Show Header only if the user is logged in */}
+        {/* Only show Header if the current route is NOT login */}
+        {location.pathname !== '/login' && user && <Header />}
         <Routes>
           <Route path="/login" element={<LoginPage />} />  {/* Add Login Route */}
           <Route path="/" element={
