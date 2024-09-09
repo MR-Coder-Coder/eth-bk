@@ -222,6 +222,12 @@ p.error {
   color: #333;
 }
 
+.login-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
 .login-page form {
   display: flex;
   flex-direction: column;

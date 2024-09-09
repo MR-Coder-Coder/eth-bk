@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/config';
+import logo from '../assets/logo.png'; // Import the logo image
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -22,6 +23,7 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
+      <img src={logo} alt="Logo" className="login-logo" /> {/* Add the logo image */}
       <h2>Login</h2>
       {error && <p className="error">{error}</p>}
       <form onSubmit={handleLogin}>
