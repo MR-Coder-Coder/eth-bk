@@ -1,23 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 function WalletForm({ onSubmit }) {
   const [walletAddress, setWalletAddress] = useState('');
+  const [walletAddresses, setWalletAddresses] = useState([]);
+  const [token, setToken] = useState('');
+  const [tokens, setTokens] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWalletsAndTokens = async () => {
+      const functions = getFunctions();
+      const getWalletAndTokens = httpsCallable(functions, 'getWalletAndTokens');
+
+      try {
+        const response = await getWalletAndTokens();
+        setWalletAddresses(response.data.wallets);
+        setTokens(response.data.tokens);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching wallet addresses and tokens:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchWalletsAndTokens();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(walletAddress);
+    onSubmit(walletAddress, token); // Pass wallet address and token to the App.js
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={walletAddress}
-        onChange={(e) => setWalletAddress(e.target.value)}
-        placeholder="Enter wallet address"
-        required
-      />
-      <button type="submit">Fetch Transactions</button>
+    <form className="wallet-form" onSubmit={handleSubmit}>
+      <div className="form-group-row">
+        <div className="form-group">
+          <label htmlFor="walletAddress">Wallet Address</label>
+          <select
+            id="walletAddress"
+            value={walletAddress}
+            onChange={(e) => setWalletAddress(e.target.value)}
+            required
+          >
+            <option value="">Select Wallet Address</option>
+            {walletAddresses.map((wallet, index) => (
+              <option key={index} value={wallet.address}>
+                {wallet.address}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="token">Token</label>
+          <select
+            id="token"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            required
+          >
+            <option value="">Select Token</option>
+            {tokens.map((token, index) => (
+              <option key={index} value={token}>
+                {token}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <button className="submit-btn" type="submit">Fetch Transactions</button>
     </form>
   );
 }

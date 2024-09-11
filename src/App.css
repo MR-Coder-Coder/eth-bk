@@ -47,79 +47,120 @@
 /* General styles */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f0f0f0; /* Light background to mimic the second screenshot */
+  background-color: #f0f0f0;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Full viewport height */
+  min-height: 100vh;
   margin: 0;
 }
 
-/* App component styles */
 .App {
-  max-width: 1200px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  text-align: left;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
-/* Header styles */
-header {
-  background-color: #282c34;
-  padding: 20px;
-  color: white;
-  text-align: center;
-}
-
-header h1 {
-  font-size: 2rem;
-  margin-bottom: 10px;
-}
-
-header h3 {
-  font-size: 1rem;
-  color: #61dafb;
-  margin-bottom: 5px;
-}
-
-header nav ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 10px;
-}
-
-header nav ul li {
-  display: inline;
-  margin-right: 20px;
-}
-
-header nav ul li a {
-  color: #61dafb;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-header nav ul li a:hover {
-  text-decoration: underline;
-}
-
-/* Form styles */
+/* General layout styles */
 form {
-  margin: 20px 0;
   display: flex;
-  justify-content: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 15px;
 }
 
 input[type="text"] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  width: 300px;
   font-size: 1rem;
 }
 
-button {
+/* Align wallet address and token selection side by side */
+.form-group-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-group {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.form-group:last-child {
+  margin-right: 0;
+}
+
+input[type="text"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+/* Header styles */
+.app-header {
+  background-color: #1a1a1a;
+  padding: 20px;
+  color: white;
+  text-align: center;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.nav-links {
+  list-style: none;
+  padding: 0;
+}
+
+.nav-links li {
+  display: inline;
+  margin-right: 20px;
+}
+
+.nav-links li a {
+  color: #61dafb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-links li a:hover {
+  text-decoration: underline;
+}
+
+/* Form styles */
+.wallet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.wallet-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wallet-form label {
+  font-size: 1rem;
+  color: #555;
+}
+
+.wallet-form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.submit-btn {
   background-color: #61dafb;
   border: none;
   color: white;
@@ -127,10 +168,17 @@ button {
   font-size: 1rem;
   border-radius: 5px;
   cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
+.submit-btn:hover {
   background-color: #21a1f1;
+}
+
+/* Button disabled state */
+.submit-btn:disabled {
+  background-color: #888;
 }
 
 /* Loading and Error styles */
@@ -162,47 +210,81 @@ p.error {
   color: #666;
 }
 
-/* TransactionList styles */
-.TransactionList {
-  margin-top: 20px;
-}
-
-.TransactionList table {
+/* Table styles */
+.transaction-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
   border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  table-layout: fixed; /* Fix table layout to prevent overlapping */
 }
 
-.TransactionList th, .TransactionList td {
+.transaction-table th, .transaction-table td {
   padding: 10px;
   text-align: left;
   border: 1px solid #ddd;
+  white-space: nowrap; /* Prevent overflow in columns */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Truncate if too long */
 }
 
-.TransactionList th {
+.transaction-table th {
   background-color: #f8f8f8;
   color: #333;
 }
 
-.TransactionList tr:nth-child(even) {
+.transaction-table tr:nth-child(even) {
   background-color: #f4f4f9;
+}
+
+/* Ensure the Value and Gas columns are wide enough to prevent overlap */
+.transaction-table td:nth-child(5), /* Value column */
+.transaction-table td:nth-child(6) { /* Gas column */
+  min-width: 100px;
+  white-space: nowrap; /* Ensure no word wrap in numbers */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Truncate if necessary */
+}
+
+/* Expanded details */
+.transaction-details td {
+  background-color: #f9f9f9;
+}
+
+.transaction-details div {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.transaction-details p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Hover effect for table rows */
+.transaction-table tr:hover {
+  background-color: #e9f5ff;
+  cursor: pointer;
 }
 
 /* CSV Download link */
 .CSVLink {
-  display: block;
-  margin-bottom: 20px;
-  color: #61dafb;
-  text-align: right;
+  display: inline-block;
+  margin-bottom: 10px;
+  background-color: #61dafb;
+  color: white;
+  padding: 10px 15px;
   font-size: 1rem;
+  border-radius: 5px;
   text-decoration: none;
+  transition: background-color 0.3s ease;
 }
 
 .CSVLink:hover {
-  text-decoration: underline;
+  background-color: #21a1f1;
 }
 
 /* Login page */
@@ -332,5 +414,25 @@ p.error {
   .google-sign-in-button .google-icon {
     width: 18px;
     height: 18px;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .App {
+    padding: 10px;
+  }
+
+  .wallet-form {
+    padding: 10px;
+  }
+
+  .submit-btn {
+    padding: 12px;
+    font-size: 0.9rem;
   }
 }

@@ -1,40 +1,48 @@
 import React, { useEffect, useState } from 'react';
 
 function BalanceDisplay({ transactions, walletAddress }) {
-  const [ethBalance, setEthBalance] = useState(0);
-  const [usdtBalance, setUsdtBalance] = useState(0);
+  const [balances, setBalances] = useState({}); // Store balances for all token types
 
   useEffect(() => {
-    let ethBalance = 0;
-    let usdtBalance = 0;
+    const updatedBalances = {};
 
     transactions.forEach((tx) => {
-      const value = parseFloat(tx.value) / 1e18; // Convert value from Wei to Ether
+      const value = parseFloat(tx.value);
+
+      // Determine the conversion factor based on the token type
+      let conversionFactor = 1;
       if (tx.transactionType === 'ETH') {
-        if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
-          ethBalance -= value;
-        } else if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
-          ethBalance += value;
-        }
-      } else if (tx.transactionType === 'USDT') {
-        const usdtValue = parseFloat(tx.value) / 1e6; // Convert value from smallest unit to USDT
-        if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
-          usdtBalance -= usdtValue;
-        } else if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
-          usdtBalance += usdtValue;
-        }
+        conversionFactor = 1e18; // Convert Wei to Ether
+      } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
+        conversionFactor = 1e6; // Convert smallest unit to token value (USDT, USDC)
+      }
+
+      const adjustedValue = value / conversionFactor;
+
+      // Ensure we track the balance for each token
+      if (!updatedBalances[tx.transactionType]) {
+        updatedBalances[tx.transactionType] = 0;
+      }
+
+      // Adjust balance based on whether the transaction is incoming or outgoing
+      if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
+        updatedBalances[tx.transactionType] -= adjustedValue;
+      } else if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
+        updatedBalances[tx.transactionType] += adjustedValue;
       }
     });
 
-    setEthBalance(ethBalance);
-    setUsdtBalance(usdtBalance);
+    setBalances(updatedBalances); // Update state with the calculated balances
   }, [transactions, walletAddress]);
 
   return (
     <div className="BalanceDisplay">
       <h3>Balances</h3>
-      <p>ETH Balance: {ethBalance.toFixed(6)} ETH</p>
-      <p>USDT Balance: {usdtBalance.toFixed(2)} USDT</p>
+      {Object.keys(balances).map((tokenType) => (
+        <p key={tokenType}>
+          {tokenType} Balance: {balances[tokenType].toFixed(6)} {tokenType}
+        </p>
+      ))}
     </div>
   );
 }
