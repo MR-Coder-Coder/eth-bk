@@ -9,7 +9,10 @@ import AdminDashboard from './components/AdminDashboard'; // Import the new Admi
 import { fetchTransactions } from './utils/api';
 import { auth } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import './App.css';
+
+const db = getFirestore(); // Initialize Firestore
 
 function MainContent() {
   const [walletAddress, setWalletAddress] = useState('');
@@ -18,11 +21,22 @@ function MainContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null); // New state for user role
   const location = useLocation();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        const userDocRef = doc(db, 'user', currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role); // Set user role from Firestore
+        }
+      } else {
+        setUser(null);
+        setUserRole(null); // Reset role if no user
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -64,7 +78,14 @@ function MainContent() {
             <Navigate to="/login" />
           )
         } />
-        <Route path="/admin" element={user ? <AdminDashboard /> : <Navigate to="/login" />} /> {/* New admin route */}
+        {/* Admin route with role-based access */}
+        <Route path="/admin" element={
+          user && userRole === 'admin' ? (
+            <AdminDashboard />
+          ) : (
+            <Navigate to="/login" /> // Redirect to login or another page if not admin
+          )
+        } />
       </Routes>
     </div>
   );
