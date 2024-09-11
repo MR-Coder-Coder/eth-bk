@@ -292,3 +292,42 @@ p.error {
     width: 100%;
   }
 }
+
+/* Google sign-in button styles */
+.google-sign-in-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4285F4;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  gap: 10px; /* Space between icon and text */
+}
+
+.google-sign-in-button:hover {
+  background-color: #357ae8;
+}
+
+/* Styling for the Google icon inside the button */
+.google-sign-in-button .google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive styles for the button */
+@media (max-width: 768px) {
+  .google-sign-in-button {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .google-sign-in-button .google-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
