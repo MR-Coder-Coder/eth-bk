@@ -301,16 +301,19 @@ p.error {
   background-color: #4285F4;
   color: white;
   border: none;
+  width: 100%; /* Match the width of the Login button */
   padding: 12px;
   font-size: 1rem;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   gap: 10px; /* Space between icon and text */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for a card-like button */
 }
 
 .google-sign-in-button:hover {
   background-color: #357ae8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
 }
 
 /* Styling for the Google icon inside the button */
