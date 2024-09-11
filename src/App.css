@@ -391,6 +391,7 @@ p.error {
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   gap: 10px; /* Space between icon and text */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for a card-like button */
+  margin-top: 10px; /* Add a margin to create space between the buttons */
 }
 
 .google-sign-in-button:hover {
