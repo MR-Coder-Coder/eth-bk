@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CSVLink } from 'react-csv';
+import './TransactionList.css';
 
 function TransactionList({ transactions, walletAddress }) {
   const [expandedRows, setExpandedRows] = useState([]); // Track expanded rows
@@ -76,6 +77,7 @@ function TransactionList({ transactions, walletAddress }) {
                       <p><strong>From:</strong> {tx.from}</p>
                       <p><strong>To:</strong> {tx.to}</p>
                       <p><strong>Value:</strong> {tx.value}</p>
+                      <p><strong>Time:</strong> {tx.humanReadableTime}</p>
                       <p><strong>Gas Price:</strong> {tx.gasPrice}</p>
                       <p><strong>Gas Used:</strong> {tx.gasUsed}</p>
                     </div>

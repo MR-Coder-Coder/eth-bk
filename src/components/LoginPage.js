@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../firebase/config'; // Assuming auth is already configured in your firebase config
 import logo from '../assets/logo.png'; // Import the logo image
+import './LoginPage.css';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

@@ -2,7 +2,10 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const axios = require('axios');
 
-admin.initializeApp();
+// Initialize Firebase Admin SDK if not already initialized
+if (admin.apps.length === 0) {
+    admin.initializeApp();
+}
 
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';

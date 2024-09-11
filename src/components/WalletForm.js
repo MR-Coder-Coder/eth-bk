@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import './WalletForm.css';
 
 function WalletForm({ onSubmit }) {
   const [walletAddress, setWalletAddress] = useState('');

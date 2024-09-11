@@ -5,12 +5,12 @@ import WalletForm from './components/WalletForm';
 import TransactionList from './components/TransactionList';
 import BalanceDisplay from './components/BalanceDisplay';
 import LoginPage from './components/LoginPage';
-import { fetchTransactions } from './utils/api'; // Import the fetchTransactions function
+import AdminDashboard from './components/AdminDashboard'; // Import the new AdminDashboard component
+import { fetchTransactions } from './utils/api';
 import { auth } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import './App.css';
 
-// Main content for the app
 function MainContent() {
   const [walletAddress, setWalletAddress] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
@@ -18,10 +18,9 @@ function MainContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-  const location = useLocation(); // Access to location inside the Router
+  const location = useLocation();
 
   useEffect(() => {
-    // Monitor authentication state
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
@@ -34,7 +33,7 @@ function MainContent() {
     setLoading(true);
     setError(null);
     try {
-      const result = await fetchTransactions(address, token); // Pass both wallet address and token symbol
+      const result = await fetchTransactions(address, token);
       setTransactions(result);
     } catch (err) {
       setError(err.message);
@@ -51,7 +50,7 @@ function MainContent() {
         <Route path="/" element={
           user ? (
             <>
-              <WalletForm onSubmit={handleSubmit} /> {/* Form to submit wallet address and token */}
+              <WalletForm onSubmit={handleSubmit} />
               {loading && <p>Loading...</p>}
               {error && <p className="error">{error}</p>}
               {transactions.length > 0 && (
@@ -65,6 +64,7 @@ function MainContent() {
             <Navigate to="/login" />
           )
         } />
+        <Route path="/admin" element={user ? <AdminDashboard /> : <Navigate to="/login" />} /> {/* New admin route */}
       </Routes>
     </div>
   );

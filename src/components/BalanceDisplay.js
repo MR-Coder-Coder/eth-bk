@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './BalanceDisplay.css';
 
 function BalanceDisplay({ transactions, walletAddress }) {
   const [balances, setBalances] = useState({}); // Store balances for all token types
