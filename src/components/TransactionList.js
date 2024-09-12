@@ -38,10 +38,20 @@ function TransactionList({ transactions, walletAddress }) {
 
   const transactionsWithAdditionalInfo = transactions.map((tx) => {
     const direction = tx.from === walletAddress.toLowerCase() ? 'Out' : 'In';
+    
+    // Convert the transaction value based on the token type
+    let adjustedValue = tx.value;
+    if (tx.transactionType === 'ETH') {
+      adjustedValue = (parseFloat(tx.value) / 1e18); // Convert Wei to Ether
+    } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
+      adjustedValue = (parseFloat(tx.value) / 1e6); // Convert smallest unit to token value (USDT, USDC)
+    }
+
     return {
       ...tx,
       humanReadableTime: new Date(tx.timeStamp * 1000).toLocaleString(),
       direction,
+      adjustedValue, // Add the adjusted (human-readable) value
     };
   });
 
@@ -66,7 +76,7 @@ function TransactionList({ transactions, walletAddress }) {
                 <td>{tx.blockNumber}</td>
                 <td>{tx.humanReadableTime}</td>
                 <td>{tx.direction}</td>
-                <td>{tx.value}</td>
+                <td>{tx.adjustedValue}</td> {/* Show adjusted value */}
                 <td>{tx.gas}</td>
               </tr>
               {expandedRows.includes(index) && (
@@ -76,7 +86,7 @@ function TransactionList({ transactions, walletAddress }) {
                       <p><strong>Hash:</strong> {tx.hash}</p>
                       <p><strong>From:</strong> {tx.from}</p>
                       <p><strong>To:</strong> {tx.to}</p>
-                      <p><strong>Value:</strong> {tx.value}</p>
+                      <p><strong>Value:</strong> {tx.adjustedValue}</p> {/* Show adjusted value */}
                       <p><strong>Time:</strong> {tx.humanReadableTime}</p>
                       <p><strong>Gas Price:</strong> {tx.gasPrice}</p>
                       <p><strong>Gas Used:</strong> {tx.gasUsed}</p>
