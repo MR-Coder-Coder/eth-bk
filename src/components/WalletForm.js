@@ -41,17 +41,17 @@ function WalletForm({ onSubmit }) {
     <form className="wallet-form" onSubmit={handleSubmit}>
       <div className="form-group-row">
         <div className="form-group">
-          <label htmlFor="walletAddress">Wallet Address</label>
+          <label htmlFor="walletAddress">Wallet</label>
           <select
             id="walletAddress"
             value={walletAddress}
             onChange={(e) => setWalletAddress(e.target.value)}
             required
           >
-            <option value="">Select Wallet Address</option>
+            <option value="">Select Wallet</option>
             {walletAddresses.map((wallet, index) => (
-              <option key={index} value={wallet.address}>
-                {wallet.address}
+              <option key={index} value={wallet.wallet_address}>
+                {wallet.wallet_name} {/* Display wallet_name in dropdown */}
               </option>
             ))}
           </select>
