@@ -6,7 +6,7 @@ import TransactionList from './components/TransactionList';
 import BalanceDisplay from './components/BalanceDisplay';
 import LoginPage from './components/LoginPage';
 import AdminDashboard from './components/AdminDashboard'; // Import the new AdminDashboard component
-import { fetchTransactions } from './utils/api';
+import { fetchTransactions } from './utils/api'; // Use the updated fetchTransactions function
 import { auth } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
