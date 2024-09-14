@@ -1,0 +1,130 @@
+/* ResultsPage layout */
+#results-container .ResultsPage {
+    width: 100vw;
+    max-width: 1200px; /* Set a reasonable max-width */
+    margin: 0 auto; /* Center the content horizontally */
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+/* Navigation and CSV Download in a single flex container */
+#results-container .ResultsPage .actions-container {
+    display: flex;
+    justify-content: space-between; /* Space between CSV and Nav Links */
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Navigation Links */
+#results-container .ResultsPage .nav-links {
+    display: flex;
+    gap: 10px;
+}
+
+#results-container .ResultsPage .nav-links a {
+    text-decoration: none;
+    color: #333333;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: 1px solid #333; /* Add a border to make it look like a button */
+    border-radius: 5px;
+    background-color: white;
+    transition: background-color 0.3s ease;
+}
+
+#results-container .ResultsPage .nav-links a:hover {
+    background-color: #f1f1f1;
+    color: #000;
+    border-color: #000;
+}
+
+/* CSV Download Button */
+#results-container .ResultsPage .CSVLink {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #00b3ff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+#results-container .ResultsPage .CSVLink:hover {
+    background-color: #333333;
+}
+
+/* Transaction Table */
+#results-container .ResultsPage .transaction-table {
+    width: 100%; /* Ensure the table takes the full width */
+    max-width: 1000px; /* Set a max width for large screens */
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+}
+
+#results-container .ResultsPage .transaction-table th,
+#results-container .ResultsPage .transaction-table td {
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+#results-container .ResultsPage .transaction-table th {
+    background-color: #f9f9f9;
+    color: #333333;
+}
+
+#results-container .ResultsPage .transaction-table td {
+    color: #555;
+}
+
+#results-container .ResultsPage .transaction-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#results-container .ResultsPage .transaction-table tr:hover {
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+/* Responsive adjustments for small screens */
+@media screen and (max-width: 768px) {
+    #results-container .ResultsPage .transaction-table,
+    #results-container .ResultsPage .transaction-table thead,
+    #results-container .ResultsPage .transaction-table tbody,
+    #results-container .ResultsPage .transaction-table th,
+    #results-container .ResultsPage .transaction-table td,
+    #results-container .ResultsPage .transaction-table tr {
+        display: block;
+    }
+
+    #results-container .ResultsPage .transaction-table td {
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+    }
+
+    #results-container .ResultsPage .transaction-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    #results-container .ResultsPage .transaction-table th {
+        display: none;
+    }
+
+    #results-container .ResultsPage .CSVLink {
+        width: 100%;
+        text-align: center;
+    }
+}

@@ -59,123 +59,125 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="admin-dashboard">
-      <h2>Admin Dashboard</h2>
+    <div className="admin-box"> {/* Added div with class admin-box */}
+      <div className="admin-dashboard">
+        <h2>Admin Dashboard</h2>
       
-      {/* Tabs to toggle between adding wallets and tokens */}
-      <div className="tabs">
-        <button
-          className={isWalletMode ? 'active' : ''}
-          onClick={() => setIsWalletMode(true)}
-        >
-          Wallet Addresses
-        </button>
-        <button
-          className={!isWalletMode ? 'active' : ''}
-          onClick={() => setIsWalletMode(false)}
-        >
-          Token Addresses
-        </button>
-      </div>
+        {/* Tabs to toggle between adding wallets and tokens */}
+        <div className="tabs">
+          <button
+            className={isWalletMode ? 'active' : ''}
+            onClick={() => setIsWalletMode(true)}
+          >
+            Wallet Addresses
+          </button>
+          <button
+            className={!isWalletMode ? 'active' : ''}
+            onClick={() => setIsWalletMode(false)}
+          >
+            Token Addresses
+          </button>
+        </div>
 
-      {/* Add form, switches between wallet and token inputs */}
-      <div className="form">
-        {isWalletMode ? (
-          <>
-            <input 
-              type="text" 
-              placeholder="Enter wallet address" 
-              value={walletAddress} 
-              onChange={(e) => setWalletAddress(e.target.value)} 
-            />
-            <input 
-              type="text" 
-              placeholder="Enter wallet name" 
-              value={walletName} 
-              onChange={(e) => setWalletName(e.target.value)} 
-            />
-            <button onClick={handleAddWallet}>Add New Wallet</button>
-          </>
+        {/* Add form, switches between wallet and token inputs */}
+        <div className="form">
+          {isWalletMode ? (
+            <>
+              <input 
+                type="text" 
+                placeholder="Enter wallet address" 
+                value={walletAddress} 
+                onChange={(e) => setWalletAddress(e.target.value)} 
+              />
+              <input 
+                type="text" 
+                placeholder="Enter wallet name" 
+                value={walletName} 
+                onChange={(e) => setWalletName(e.target.value)} 
+              />
+              <button onClick={handleAddWallet}>Add New Wallet</button>
+            </>
+          ) : (
+            <>
+              <input 
+                type="text" 
+                placeholder="Enter token address" 
+                value={tokenAddress} 
+                onChange={(e) => setTokenAddress(e.target.value)} 
+              />
+              <input 
+                type="text" 
+                placeholder="Enter token name" 
+                value={tokenName} 
+                onChange={(e) => setTokenName(e.target.value)} 
+              />
+              <button onClick={handleAddToken}>Add New Token</button>
+            </>
+          )}
+        </div>
+
+        {/* Existing records header */}
+        <div className="records-header">
+          <h3>{viewWallets ? 'Existing Wallet Records' : 'Existing Token Records'}</h3>
+        </div>
+
+        {/* Toggle between viewing wallet and token records */}
+        <div className="tabs">
+          <button
+            className={viewWallets ? 'active' : ''}
+            onClick={() => setViewWallets(true)}
+          >
+            View Wallet Records
+          </button>
+          <button
+            className={!viewWallets ? 'active' : ''}
+            onClick={() => setViewWallets(false)}
+          >
+            View Token Records
+          </button>
+        </div>
+
+        {/* Display existing records */}
+        {viewWallets ? (
+          <div className="records">
+            <table>
+              <thead>
+                <tr>
+                  <th>Wallet Address</th>
+                  <th>Wallet Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {wallets.map((wallet) => (
+                  <tr key={wallet.id}>
+                    <td>{wallet.address}</td>
+                    <td>{wallet.wallet_name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
-          <>
-            <input 
-              type="text" 
-              placeholder="Enter token address" 
-              value={tokenAddress} 
-              onChange={(e) => setTokenAddress(e.target.value)} 
-            />
-            <input 
-              type="text" 
-              placeholder="Enter token name" 
-              value={tokenName} 
-              onChange={(e) => setTokenName(e.target.value)} 
-            />
-            <button onClick={handleAddToken}>Add New Token</button>
-          </>
+          <div className="records">
+            <table>
+              <thead>
+                <tr>
+                  <th>Token Address</th>
+                  <th>Token Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tokens.map((token) => (
+                  <tr key={token.id}>
+                    <td>{token.address}</td>
+                    <td>{token.token_name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
-
-      {/* Existing records header */}
-      <div className="records-header">
-        <h3>{viewWallets ? 'Existing Wallet Records' : 'Existing Token Records'}</h3>
-      </div>
-
-      {/* Toggle between viewing wallet and token records */}
-      <div className="tabs">
-        <button
-          className={viewWallets ? 'active' : ''}
-          onClick={() => setViewWallets(true)}
-        >
-          View Wallet Records
-        </button>
-        <button
-          className={!viewWallets ? 'active' : ''}
-          onClick={() => setViewWallets(false)}
-        >
-          View Token Records
-        </button>
-      </div>
-
-      {/* Display existing records */}
-      {viewWallets ? (
-        <div className="records">
-          <table>
-            <thead>
-              <tr>
-                <th>Wallet Address</th>
-                <th>Wallet Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {wallets.map((wallet) => (
-                <tr key={wallet.id}>
-                  <td>{wallet.address}</td>
-                  <td>{wallet.wallet_name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="records">
-          <table>
-            <thead>
-              <tr>
-                <th>Token Address</th>
-                <th>Token Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tokens.map((token) => (
-                <tr key={token.id}>
-                  <td>{token.address}</td>
-                  <td>{token.token_name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
     </div>
   );
 };

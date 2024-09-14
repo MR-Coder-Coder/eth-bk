@@ -38,45 +38,47 @@ function WalletForm({ onSubmit }) {
   }
 
   return (
-    <form className="wallet-form" onSubmit={handleSubmit}>
-      <div className="form-group-row">
-        <div className="form-group">
-          <label htmlFor="walletAddress">Wallet</label>
-          <select
-            id="walletAddress"
-            value={walletAddress}
-            onChange={(e) => setWalletAddress(e.target.value)}
-            required
-          >
-            <option value="">Select Wallet</option>
-            {walletAddresses.map((wallet, index) => (
-              <option key={index} value={wallet.wallet_address}>
-                {wallet.wallet_name} {/* Display wallet_name in dropdown */}
-              </option>
-            ))}
-          </select>
+    <div className="wallet-box"> {/* Added div with class wallet-box */}
+      <form className="wallet-form" onSubmit={handleSubmit}>
+        <div className="form-group-row">
+          <div className="form-group">
+            <label htmlFor="walletAddress">Wallet</label>
+            <select
+              id="walletAddress"
+              value={walletAddress}
+              onChange={(e) => setWalletAddress(e.target.value)}
+              required
+            >
+              <option value="">Select Wallet</option>
+              {walletAddresses.map((wallet, index) => (
+                <option key={index} value={wallet.wallet_address}>
+                  {wallet.wallet_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="token">Token</label>
+            <select
+              id="token"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              required
+            >
+              <option value="">Select Token</option>
+              {tokens.map((token, index) => (
+                <option key={index} value={token}>
+                  {token}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="token">Token</label>
-          <select
-            id="token"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            required
-          >
-            <option value="">Select Token</option>
-            {tokens.map((token, index) => (
-              <option key={index} value={token}>
-                {token}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <button className="submit-btn" type="submit">Fetch Transactions</button>
-    </form>
+        <button className="submit-btn" type="submit">Fetch Transactions</button>
+      </form>
+    </div>
   );
 }
 

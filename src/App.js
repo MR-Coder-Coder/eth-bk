@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+  Navigate,
+  useNavigate,
+} from 'react-router-dom';
 import Header from './components/Header';
 import WalletForm from './components/WalletForm';
 import TransactionList from './components/TransactionList';
+import ResultsPage from './components/ResultsPage'; // Import the new ResultsPage component
 import BalanceDisplay from './components/BalanceDisplay';
 import LoginPage from './components/LoginPage';
-import AdminDashboard from './components/AdminDashboard'; // Import the new AdminDashboard component
-import { fetchTransactions } from './utils/api'; // Use the updated fetchTransactions function
+import AdminDashboard from './components/AdminDashboard';
+import { fetchTransactions } from './utils/api';
 import { auth } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import './App.css';
 
-const db = getFirestore(); // Initialize Firestore
+const db = getFirestore();
 
 function MainContent() {
   const [walletAddress, setWalletAddress] = useState('');
@@ -21,8 +29,9 @@ function MainContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-  const [userRole, setUserRole] = useState(null); // New state for user role
+  const [userRole, setUserRole] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate(); // Use navigate to programmatically navigate
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -31,11 +40,11 @@ function MainContent() {
         const userDocRef = doc(db, 'user', currentUser.uid);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
-          setUserRole(userDoc.data().role); // Set user role from Firestore
+          setUserRole(userDoc.data().role);
         }
       } else {
         setUser(null);
-        setUserRole(null); // Reset role if no user
+        setUserRole(null);
       }
     });
     return () => unsubscribe();
@@ -49,43 +58,72 @@ function MainContent() {
     try {
       const result = await fetchTransactions(address, token);
       setTransactions(result);
+      setLoading(false);
+      // Navigate to results page after fetching transactions
+      navigate('/results');
     } catch (err) {
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   };
 
+  const isResultsPage = location.pathname === '/results'; // Check if the current page is the ResultsPage
+  const isLoginPage = location.pathname === '/login'; // Check if the current page is the LoginPage
+
   return (
-    <div className="App">
-      {location.pathname !== '/login' && user && <Header />}
+    <div className={isResultsPage || isLoginPage ? '' : 'main-container'}>
+      {/* Apply global styles only to components except the ResultsPage and LoginPage */}
+      {!isLoginPage && !isResultsPage && user && <Header />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={
-          user ? (
-            <>
-              <WalletForm onSubmit={handleSubmit} />
-              {loading && <p>Loading...</p>}
-              {error && <p className="error">{error}</p>}
-              {transactions.length > 0 && (
-                <>
-                  <BalanceDisplay transactions={transactions} walletAddress={walletAddress} />
-                  <TransactionList transactions={transactions} walletAddress={walletAddress} />
-                </>
-              )}
-            </>
-          ) : (
-            <Navigate to="/login" />
-          )
-        } />
+        <Route
+          path="/"
+          element={
+            user ? (
+              <>
+                <WalletForm onSubmit={handleSubmit} />
+                {loading && <p>Loading...</p>}
+                {error && <p className="error">{error}</p>}
+                {transactions.length > 0 && (
+                  <>
+                    <BalanceDisplay
+                      transactions={transactions}
+                      walletAddress={walletAddress}
+                    />
+                    <TransactionList transactionsAvailable={true} />
+                  </>
+                )}
+              </>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        {/* Add the ResultsPage route */}
+        <Route
+          path="/results"
+          element={
+            user ? (
+              <ResultsPage
+                transactions={transactions}
+                walletAddress={walletAddress}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
         {/* Admin route with role-based access */}
-        <Route path="/admin" element={
-          user && userRole === 'admin' ? (
-            <AdminDashboard />
-          ) : (
-            <Navigate to="/login" /> // Redirect to login or another page if not admin
-          )
-        } />
+        <Route
+          path="/admin"
+          element={
+            user && userRole === 'admin' ? (
+              <AdminDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
       </Routes>
     </div>
   );
