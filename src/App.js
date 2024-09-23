@@ -86,10 +86,6 @@ function MainContent() {
                 {error && <p className="error">{error}</p>}
                 {transactions.length > 0 && (
                   <>
-                    <BalanceDisplay
-                      transactions={transactions}
-                      walletAddress={walletAddress}
-                    />
                     <TransactionList transactionsAvailable={true} />
                   </>
                 )}
@@ -104,10 +100,17 @@ function MainContent() {
           path="/results"
           element={
             user ? (
-              <ResultsPage
-                transactions={transactions}
-                walletAddress={walletAddress}
-              />
+              <>
+                {/* Display BalanceDisplay on top of ResultsPage */}
+                <BalanceDisplay
+                  transactions={transactions}
+                  walletAddress={walletAddress}
+                />
+                <ResultsPage
+                  transactions={transactions}
+                  walletAddress={walletAddress}
+                />
+              </>
             ) : (
               <Navigate to="/login" />
             )
