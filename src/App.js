@@ -14,6 +14,7 @@ import ResultsPage from './components/ResultsPage'; // Import the new ResultsPag
 import BalanceDisplay from './components/BalanceDisplay';
 import LoginPage from './components/LoginPage';
 import AdminDashboard from './components/AdminDashboard';
+import WalletSummary from './components/WalletSummary';
 import { fetchTransactions } from './utils/api';
 import { auth } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -69,11 +70,12 @@ function MainContent() {
 
   const isResultsPage = location.pathname === '/results'; // Check if the current page is the ResultsPage
   const isLoginPage = location.pathname === '/login'; // Check if the current page is the LoginPage
+  const isSummaryPage = location.pathname === '/summary'; // Check if the current page is the SummaryPage
 
   return (
     <div className={isResultsPage || isLoginPage ? '' : 'main-container'}>
       {/* Apply global styles only to components except the ResultsPage and LoginPage */}
-      {!isLoginPage && !isResultsPage && user && <Header />}
+      {!isLoginPage && !isResultsPage && !isSummaryPage && user && <Header />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route
@@ -126,6 +128,10 @@ function MainContent() {
               <Navigate to="/login" />
             )
           }
+        />
+        <Route
+          path="/summary"
+          element={<WalletSummary transactions={transactions} walletAddress={walletAddress} />}
         />
       </Routes>
     </div>

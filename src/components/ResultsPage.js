@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { CSVLink } from 'react-csv';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Link, useNavigate } from 'react-router-dom'; // Add useNavigate
 import './ResultsPage.css'; // Ensure you adjust CSS as needed
 
 function ResultsPage({ transactions, walletAddress }) {
   const [expandedRows, setExpandedRows] = useState([]);
+  const navigate = useNavigate(); // Add this hook
 
   const headers = [
     { label: 'Type', key: 'transactionType' },
@@ -96,6 +97,13 @@ function ResultsPage({ transactions, walletAddress }) {
   return (
     <div id="results-container">
       <div className="ResultsPage full-screen">
+        <button 
+          className="toggle-summary-btn"
+          onClick={() => navigate('/summary')} // Use navigation instead of state
+        >
+          View Transaction Summary
+        </button>
+
         <div className="nav-links">
           <Link to="/login">Login</Link>
           <Link to="/admin">Admin</Link>
