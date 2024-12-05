@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './WalletSummary.css';
 
-function WalletSummary({ transactions, walletAddress }) {
+function WalletSummary({ transactions, walletAddress, network }) {
   const navigate = useNavigate();
   const [expandedAddresses, setExpandedAddresses] = useState([]);
 
@@ -27,19 +27,34 @@ function WalletSummary({ transactions, walletAddress }) {
           address: counterpartyAddress,
           totalTransactions: 0,
           tokens: {
-            ETH: { sent: 0, received: 0 },
-            USDT: { sent: 0, received: 0 },
-            USDC: { sent: 0, received: 0 }
+            // Initialize based on network
+            ...(network === 'ETH' ? {
+              ETH: { sent: 0, received: 0 },
+              USDT: { sent: 0, received: 0 },
+              USDC: { sent: 0, received: 0 }
+            } : {
+              TRX: { sent: 0, received: 0 },
+              USDT: { sent: 0, received: 0 },
+              USDC: { sent: 0, received: 0 }
+            })
           }
         };
       }
 
-      // Convert the value based on token type
+      // Convert the value based on token type and network
       let adjustedValue = tx.value;
-      if (tx.transactionType === 'ETH') {
-        adjustedValue = parseFloat(tx.value) / 1e18;
-      } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
-        adjustedValue = parseFloat(tx.value) / 1e6;
+      if (network === 'ETH') {
+        if (tx.transactionType === 'ETH') {
+          adjustedValue = parseFloat(tx.value) / 1e18;
+        } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
+          adjustedValue = parseFloat(tx.value) / 1e6;
+        }
+      } else if (network === 'TRON') {
+        if (tx.transactionType === 'TRX') {
+          adjustedValue = parseFloat(tx.value) / 1e6; // TRX uses 6 decimals
+        } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
+          adjustedValue = parseFloat(tx.value) / 1e6;
+        }
       }
 
       // Update the summary
@@ -64,6 +79,10 @@ function WalletSummary({ transactions, walletAddress }) {
       >
         Back to Transactions
       </button>
+
+      <div className="network-indicator">
+        Network: {network}
+      </div>
 
       <div className="summary-table-container">
         <table className="summary-table">
@@ -93,6 +112,9 @@ function WalletSummary({ transactions, walletAddress }) {
                     <td colSpan="2">
                       <div className="token-details">
                         {Object.entries(summary.tokens).map(([token, amounts]) => {
+                          // Only show tokens that have transactions
+                          if (amounts.sent === 0 && amounts.received === 0) return null;
+                          
                           const netAmount = amounts.received - amounts.sent;
                           return (
                             <div key={token} className="token-summary">

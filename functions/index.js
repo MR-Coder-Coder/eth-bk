@@ -6,6 +6,7 @@ const {addTokenAddress} = require('./addTokenAddress');
 const {addWalletAddress} = require('./addWalletAddress');
 const {addUserToFirestore} = require('./addUserToFirestore');
 const {filterTransactions} = require('./filterTransactions');
+const {fetchTronTransactions} = require('./fetchTronTransactions');
 
 exports.fetchTransactions = fetchTransactions;
 exports.getWalletAndTokens = getWalletAndTokens;
@@ -15,3 +16,4 @@ exports.addTokenAddress = addTokenAddress;
 exports.addWalletAddress = addWalletAddress;
 exports.addUserToFirestore = addUserToFirestore;
 exports.filterTransactions = filterTransactions;
+exports.fetchTronTransactions = fetchTronTransactions;

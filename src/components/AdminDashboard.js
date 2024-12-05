@@ -12,6 +12,8 @@ const AdminDashboard = () => {
   const [tokens, setTokens] = useState([]);
   const [isWalletMode, setIsWalletMode] = useState(true); // Toggle between wallet and token modes
   const [viewWallets, setViewWallets] = useState(true); // Toggle between viewing wallets or tokens
+  const [walletNetwork, setWalletNetwork] = useState('ETH');
+  const [tokenNetwork, setTokenNetwork] = useState('ETH');
 
   const functions = getFunctions(app); // Initialize Firebase functions
 
@@ -34,12 +36,16 @@ const AdminDashboard = () => {
 
   const handleAddWallet = async () => {
     const addWalletAddress = httpsCallable(functions, 'addWalletAddress');
-    const response = await addWalletAddress({ address: walletAddress, walletName });
+    const response = await addWalletAddress({ 
+      address: walletAddress, 
+      walletName, 
+      network: walletNetwork 
+    });
     if (response.data.success) {
       fetchWallets();
       setWalletAddress('');
       setWalletName('');
-      setViewWallets(true); // Switch to viewing wallets after adding
+      setViewWallets(true);
     } else {
       console.error(response.data.message);
     }
@@ -47,12 +53,16 @@ const AdminDashboard = () => {
 
   const handleAddToken = async () => {
     const addTokenAddress = httpsCallable(functions, 'addTokenAddress');
-    const response = await addTokenAddress({ address: tokenAddress, tokenName });
+    const response = await addTokenAddress({ 
+      address: tokenAddress, 
+      tokenName, 
+      network: tokenNetwork 
+    });
     if (response.data.success) {
       fetchTokens();
       setTokenAddress('');
       setTokenName('');
-      setViewWallets(false); // Switch to viewing tokens after adding
+      setViewWallets(false);
     } else {
       console.error(response.data.message);
     }
@@ -83,6 +93,13 @@ const AdminDashboard = () => {
         <div className="form">
           {isWalletMode ? (
             <>
+              <select 
+                value={walletNetwork} 
+                onChange={(e) => setWalletNetwork(e.target.value)}
+              >
+                <option value="ETH">Ethereum</option>
+                <option value="TRON">Tron</option>
+              </select>
               <input 
                 type="text" 
                 placeholder="Enter wallet address" 
@@ -99,6 +116,13 @@ const AdminDashboard = () => {
             </>
           ) : (
             <>
+              <select 
+                value={tokenNetwork} 
+                onChange={(e) => setTokenNetwork(e.target.value)}
+              >
+                <option value="ETH">Ethereum</option>
+                <option value="TRON">Tron</option>
+              </select>
               <input 
                 type="text" 
                 placeholder="Enter token address" 

@@ -10,13 +10,27 @@ const db = admin.firestore();
 
 exports.getTokenAddresses = functions.https.onCall(async () => {
     try {
-      const snapshot = await db.collection('token_addresses').get();
-      let addresses = [];
-      snapshot.forEach(doc => {
-        addresses.push({ id: doc.id, ...doc.data() });
-      });
+      // Fetch ETH token addresses
+      const ethSnapshot = await db.collection('eth_token_addresses').get();
+      const ethTokens = ethSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        network: 'ETH'
+      }));
+
+      // Fetch TRON token addresses
+      const tronSnapshot = await db.collection('tron_token_addresses').get();
+      const tronTokens = tronSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        network: 'TRON'
+      }));
+
+      // Combine both token lists
+      const addresses = [...ethTokens, ...tronTokens];
+      
       return addresses;
     } catch (error) {
       return { success: false, message: error.message };
     }
-  });
+});

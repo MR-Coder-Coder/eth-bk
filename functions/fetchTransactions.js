@@ -11,19 +11,19 @@ const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 const ETHERSCAN_API_URL = 'https://api.etherscan.io/api';
 
 exports.fetchTransactions = functions.https.onCall(async (data, context) => {
-  const { walletAddress, tokenSymbol } = data;
+  const { walletAddress, tokenSymbol, network } = data;
   
   const db = admin.firestore();
   
   try {
-    console.log(`Fetching transactions for wallet: ${walletAddress}, token: ${tokenSymbol}`);
+    console.log(`Fetching transactions for wallet: ${walletAddress}, token: ${tokenSymbol}, network: ${network}`);
 
     let ethTransactions = [];
     let tokenTransactions = [];
     let internalTransactions = [];
 
     // Fetch all token addresses from Firestore
-    const tokenSnapshot = await db.collection('token_addresses').get();
+    const tokenSnapshot = await db.collection('eth_token_addresses').get();
     const tokenAddresses = {};
     
     tokenSnapshot.forEach(doc => {

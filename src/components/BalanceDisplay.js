@@ -1,61 +1,77 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './BalanceDisplay.css';
 
-function BalanceDisplay({ transactions, walletAddress }) {
-  const [balances, setBalances] = useState({}); // Store balances for all token types
-  const totalEthGasUsedRef = useRef(0); // Use ref to track total ETH gas used
+function BalanceDisplay({ transactions, walletAddress, network }) {
+  const [balances, setBalances] = useState({});
+  const totalGasUsedRef = useRef(0);
 
   useEffect(() => {
     const updatedBalances = {};
-
-    // Reset gas used in ETH on each run
-    totalEthGasUsedRef.current = 0;
+    totalGasUsedRef.current = 0;
 
     transactions.forEach((tx) => {
       const value = parseFloat(tx.value);
 
-      // Determine the conversion factor based on the token type
+      // Determine the conversion factor based on the token type and network
       let conversionFactor = 1;
-      if (tx.transactionType === 'ETH') {
-        conversionFactor = 1e18; // Convert Wei to Ether
-      } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
-        conversionFactor = 1e6; // Convert smallest unit to token value (USDT, USDC)
+      if (network === 'ETH') {
+        if (tx.transactionType === 'ETH') {
+          conversionFactor = 1e18; // Convert Wei to Ether
+        } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
+          conversionFactor = 1e6; // Convert smallest unit to token value
+        }
+      } else if (network === 'TRON') {
+        if (tx.transactionType === 'TRX') {
+          conversionFactor = 1e6; // Convert Sun to TRX
+        } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
+          conversionFactor = 1e6; // Convert smallest unit to token value
+        }
       }
 
       const adjustedValue = value / conversionFactor;
 
-      // Ensure we track the balance for each token
+      // Initialize token balance if not exists
       if (!updatedBalances[tx.transactionType]) {
         updatedBalances[tx.transactionType] = 0;
       }
 
-      // Adjust balance based on whether the transaction is incoming or outgoing
-      if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
+      // Adjust balance based on transaction direction
+      const fromAddress = tx.from ? tx.from.toLowerCase() : '';
+      const toAddress = tx.to ? tx.to.toLowerCase() : '';
+      const walletAddr = walletAddress.toLowerCase();
+
+      if (fromAddress === walletAddr) {
         updatedBalances[tx.transactionType] -= adjustedValue;
 
-        // Deduct gas from the ETH balance, regardless of the token type
+        // Handle gas calculations based on network
         if (tx.gasPrice && tx.gasUsed) {
           const gasUsed = parseFloat(tx.gasUsed);
           const gasPrice = parseFloat(tx.gasPrice);
-          const gasInEth = (gasUsed * gasPrice) / 1e18; // Convert gas used to ETH
-          totalEthGasUsedRef.current += gasInEth; // Accumulate total gas used in ETH
+          if (network === 'ETH') {
+            const gasInEth = (gasUsed * gasPrice) / 1e18;
+            totalGasUsedRef.current += gasInEth;
+          } else if (network === 'TRON') {
+            const gasInTrx = (gasUsed * gasPrice) / 1e6;
+            totalGasUsedRef.current += gasInTrx;
+          }
         }
-      } else if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
+      } else if (toAddress === walletAddr) {
         updatedBalances[tx.transactionType] += adjustedValue;
       }
     });
 
-    // Deduct the total gas used from the ETH balance
-    if (updatedBalances['ETH']) {
-      updatedBalances['ETH'] -= totalEthGasUsedRef.current;
+    // Deduct gas from native currency balance (ETH or TRX)
+    const nativeCurrency = network === 'ETH' ? 'ETH' : 'TRX';
+    if (updatedBalances[nativeCurrency]) {
+      updatedBalances[nativeCurrency] -= totalGasUsedRef.current;
     }
 
-    setBalances(updatedBalances); // Update state with the calculated balances
-  }, [transactions, walletAddress]);
+    setBalances(updatedBalances);
+  }, [transactions, walletAddress, network]);
 
   return (
     <div className="BalanceDisplay">
-      <h3>Balances</h3>
+      <h3>Balances ({network})</h3>
       {Object.keys(balances).map((tokenType) => (
         <p key={tokenType}>
           {tokenType} Balance: {balances[tokenType].toFixed(6)} {tokenType}

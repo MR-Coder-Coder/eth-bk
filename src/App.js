@@ -31,8 +31,9 @@ function MainContent() {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [network, setNetwork] = useState('');
   const location = useLocation();
-  const navigate = useNavigate(); // Use navigate to programmatically navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -51,16 +52,16 @@ function MainContent() {
     return () => unsubscribe();
   }, []);
 
-  const handleSubmit = async (address, token) => {
+  const handleSubmit = async (address, token, selectedNetwork) => {
     setWalletAddress(address);
     setTokenSymbol(token);
+    setNetwork(selectedNetwork);
     setLoading(true);
     setError(null);
     try {
-      const result = await fetchTransactions(address, token);
+      const result = await fetchTransactions(address, token, selectedNetwork);
       setTransactions(result);
       setLoading(false);
-      // Navigate to results page after fetching transactions
       navigate('/results');
     } catch (err) {
       setError(err.message);
@@ -74,7 +75,6 @@ function MainContent() {
 
   return (
     <div className={isResultsPage || isLoginPage ? '' : 'main-container'}>
-      {/* Apply global styles only to components except the ResultsPage and LoginPage */}
       {!isLoginPage && !isResultsPage && !isSummaryPage && user && <Header />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -88,7 +88,7 @@ function MainContent() {
                 {error && <p className="error">{error}</p>}
                 {transactions.length > 0 && (
                   <>
-                    <TransactionList transactionsAvailable={true} />
+                    <TransactionList transactionsAvailable={true} network={network} />
                   </>
                 )}
               </>
@@ -97,20 +97,20 @@ function MainContent() {
             )
           }
         />
-        {/* Add the ResultsPage route */}
         <Route
           path="/results"
           element={
             user ? (
               <>
-                {/* Display BalanceDisplay on top of ResultsPage */}
                 <BalanceDisplay
                   transactions={transactions}
                   walletAddress={walletAddress}
+                  network={network}
                 />
                 <ResultsPage
                   transactions={transactions}
                   walletAddress={walletAddress}
+                  network={network}
                 />
               </>
             ) : (
@@ -118,7 +118,6 @@ function MainContent() {
             )
           }
         />
-        {/* Admin route with role-based access */}
         <Route
           path="/admin"
           element={
@@ -131,7 +130,13 @@ function MainContent() {
         />
         <Route
           path="/summary"
-          element={<WalletSummary transactions={transactions} walletAddress={walletAddress} />}
+          element={
+            <WalletSummary
+              transactions={transactions}
+              walletAddress={walletAddress}
+              network={network}
+            />
+          }
         />
       </Routes>
     </div>

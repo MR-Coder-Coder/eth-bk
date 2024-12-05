@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { CSVLink } from 'react-csv';
-import { Link, useNavigate } from 'react-router-dom'; // Add useNavigate
-import './ResultsPage.css'; // Ensure you adjust CSS as needed
+import { Link, useNavigate } from 'react-router-dom';
+import './ResultsPage.css';
 
-function ResultsPage({ transactions, walletAddress }) {
+function ResultsPage({ transactions, walletAddress, network }) {
   const [expandedRows, setExpandedRows] = useState([]);
-  const navigate = useNavigate(); // Add this hook
+  const navigate = useNavigate();
 
+  // Dynamic headers based on network
   const headers = [
     { label: 'Type', key: 'transactionType' },
     { label: 'Block', key: 'blockNumber' },
     { label: 'Time', key: 'humanReadableTime' },
     { label: 'Direction', key: 'direction' },
     { label: 'Value', key: 'adjustedValue' },
-    { label: 'ETH Balance', key: 'ethBalance' },
+    { 
+      label: network === 'ETH' ? 'ETH Balance' : 'TRX Balance', 
+      key: 'ethBalance' 
+    },
     { label: 'USDT Balance', key: 'usdtBalance' },
     { label: 'USDC Balance', key: 'usdcBalance' },
     { label: 'Gas', key: 'gas' },
@@ -28,7 +32,10 @@ function ResultsPage({ transactions, walletAddress }) {
     { label: 'From', key: 'from' },
     { label: 'To', key: 'to' },
     { label: 'Value', key: 'adjustedValue' },
-    { label: 'ETH Balance', key: 'ethBalance' },
+    { 
+      label: network === 'ETH' ? 'ETH Balance' : 'TRX Balance', 
+      key: 'ethBalance' 
+    },
     { label: 'USDT Balance', key: 'usdtBalance' },
     { label: 'USDC Balance', key: 'usdcBalance' },
     { label: 'Gas', key: 'gas' },
@@ -45,25 +52,34 @@ function ResultsPage({ transactions, walletAddress }) {
   };
 
   // Initialize balances
-  let ethBalance = 0;
+  let ethBalance = 0; // This will store ETH or TRX balance depending on network
   let usdtBalance = 0;
   let usdcBalance = 0;
 
   const transactionsWithAdditionalInfo = transactions
     .sort((a, b) => a.timeStamp - b.timeStamp)
     .map((tx) => {
-      const direction = tx.from.toLowerCase() === walletAddress.toLowerCase() ? 'Out' : 'In';
+      const fromAddress = tx.from ? tx.from.toLowerCase() : '';
+      const direction = fromAddress === walletAddress.toLowerCase() ? 'Out' : 'In';
 
-      // Convert the transaction value based on the token type
+      // Convert the transaction value based on the token type and network
       let adjustedValue = tx.value;
-      if (tx.transactionType === 'ETH') {
-        adjustedValue = parseFloat(tx.value) / 1e18; // Convert Wei to Ether
-      } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
-        adjustedValue = parseFloat(tx.value) / 1e6; // Convert smallest unit to token value
+      if (network === 'ETH') {
+        if (tx.transactionType === 'ETH') {
+          adjustedValue = parseFloat(tx.value) / 1e18;
+        } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
+          adjustedValue = parseFloat(tx.value) / 1e6;
+        }
+      } else if (network === 'TRON') {
+        if (tx.transactionType === 'TRX') {
+          adjustedValue = parseFloat(tx.value) / 1e6;
+        } else if (tx.transactionType === 'USDT' || tx.transactionType === 'USDC') {
+          adjustedValue = parseFloat(tx.value) / 1e6;
+        }
       }
 
       // Update balances
-      if (tx.transactionType === 'ETH') {
+      if (tx.transactionType === (network === 'ETH' ? 'ETH' : 'TRX')) {
         if (direction === 'In') {
           ethBalance += adjustedValue;
         } else {
@@ -88,7 +104,7 @@ function ResultsPage({ transactions, walletAddress }) {
         humanReadableTime: new Date(tx.timeStamp * 1000).toLocaleString(),
         direction,
         adjustedValue: adjustedValue.toFixed(6),
-        ethBalance: ethBalance.toFixed(6),
+        ethBalance: ethBalance.toFixed(6), // This will be ETH or TRX balance
         usdtBalance: usdtBalance.toFixed(2),
         usdcBalance: usdcBalance.toFixed(2),
       };
@@ -99,7 +115,7 @@ function ResultsPage({ transactions, walletAddress }) {
       <div className="ResultsPage full-screen">
         <button 
           className="toggle-summary-btn"
-          onClick={() => navigate('/summary')} // Use navigation instead of state
+          onClick={() => navigate('/summary')}
         >
           View Transaction Summary
         </button>
@@ -109,14 +125,20 @@ function ResultsPage({ transactions, walletAddress }) {
           <Link to="/admin">Admin</Link>
           <Link to="/">Home</Link>
         </div>
+
+        <div className="network-indicator">
+          Network: {network}
+        </div>
+
         <CSVLink
           data={transactionsWithAdditionalInfo}
           headers={CSVheaders}
-          filename="transactions.csv"
+          filename={`${network.toLowerCase()}_transactions.csv`}
           className="CSVLink"
         >
           Download CSV
         </CSVLink>
+
         <table className="transaction-table">
           <thead>
             <tr>

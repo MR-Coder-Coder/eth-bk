@@ -8,12 +8,18 @@ if (admin.apps.length === 0) {
 
 exports.filterTransactions = functions.https.onCall(async (data, context) => {
   try {
-    const { transactions } = data;
+    const { transactions, network } = data;
 
-    // Step 1: Filter out ETH transactions with a value of 0
+    // Step 1: Filter out transactions with a value of 0 based on network
     const filteredTransactions = transactions.filter(tx => {
-      // Keep all non-ETH transactions and ETH transactions where value is not 0
-      return tx.transactionType !== 'ETH' || tx.value !== '0';
+      if (network === 'ETH') {
+        // Keep all non-ETH transactions and ETH transactions where value is not 0
+        return tx.transactionType !== 'ETH' || tx.value !== '0';
+      } else if (network === 'TRON') {
+        // Keep all non-TRX transactions and TRX transactions where value is not 0
+        return tx.transactionType !== 'TRX' || tx.value !== '0';
+      }
+      return true; // Keep all transactions if network is not specified
     });
 
     return { transactions: filteredTransactions };
