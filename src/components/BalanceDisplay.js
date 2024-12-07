@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import './BalanceDisplay.css';
+
 
 function BalanceDisplay({ transactions, walletAddress, network }) {
   const [balances, setBalances] = useState({});
@@ -70,10 +70,12 @@ function BalanceDisplay({ transactions, walletAddress, network }) {
   }, [transactions, walletAddress, network]);
 
   return (
-    <div className="BalanceDisplay">
-      <h3>Balances ({network})</h3>
+    <div className="my-5 p-4 bg-gray-800 border border-gray-700 rounded-lg shadow-lg">
+      <h3 className="mb-3 text-gray-200 text-xl font-semibold">
+        Balances ({network})
+      </h3>
       {Object.keys(balances).map((tokenType) => (
-        <p key={tokenType}>
+        <p key={tokenType} className="text-lg text-gray-300 py-1">
           {tokenType} Balance: {balances[tokenType].toFixed(6)} {tokenType}
         </p>
       ))}

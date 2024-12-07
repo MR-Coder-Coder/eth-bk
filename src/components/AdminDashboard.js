@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { app } from '../firebase/config'; // Adjust this according to your Firebase config export
-import './AdminDashboard.css';
+
 
 const AdminDashboard = () => {
   const [walletAddress, setWalletAddress] = useState('');
@@ -69,33 +69,39 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="admin-box"> {/* Added div with class admin-box */}
-      <div className="admin-dashboard">
-        <h2>Admin Dashboard</h2>
-      
-        {/* Tabs to toggle between adding wallets and tokens */}
-        <div className="tabs">
+    <div className="min-h-screen bg-gray-900 p-4">
+      <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-xl p-6">
+        <h2 className="text-2xl font-bold text-gray-200 mb-6">Admin Dashboard</h2>
+        
+        <div className="flex gap-2 mb-6">
           <button
-            className={isWalletMode ? 'active' : ''}
+            className={`px-4 py-2 rounded-md transition-colors duration-200 
+              ${isWalletMode 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
             onClick={() => setIsWalletMode(true)}
           >
             Wallet Addresses
           </button>
           <button
-            className={!isWalletMode ? 'active' : ''}
+            className={`px-4 py-2 rounded-md transition-colors duration-200 
+              ${!isWalletMode 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
             onClick={() => setIsWalletMode(false)}
           >
             Token Addresses
           </button>
         </div>
 
-        {/* Add form, switches between wallet and token inputs */}
-        <div className="form">
+        <div className="space-y-4 mb-8">
           {isWalletMode ? (
             <>
               <select 
                 value={walletNetwork} 
                 onChange={(e) => setWalletNetwork(e.target.value)}
+                className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md 
+                  text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="ETH">Ethereum</option>
                 <option value="TRON">Tron</option>
@@ -104,21 +110,33 @@ const AdminDashboard = () => {
                 type="text" 
                 placeholder="Enter wallet address" 
                 value={walletAddress} 
-                onChange={(e) => setWalletAddress(e.target.value)} 
+                onChange={(e) => setWalletAddress(e.target.value)}
+                className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md 
+                  text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input 
                 type="text" 
                 placeholder="Enter wallet name" 
                 value={walletName} 
-                onChange={(e) => setWalletName(e.target.value)} 
+                onChange={(e) => setWalletName(e.target.value)}
+                className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md 
+                  text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <button onClick={handleAddWallet}>Add New Wallet</button>
+              <button 
+                onClick={handleAddWallet}
+                className="w-full py-2 bg-blue-600 text-white rounded-md 
+                  hover:bg-blue-700 transition-colors duration-200"
+              >
+                Add New Wallet
+              </button>
             </>
           ) : (
             <>
               <select 
                 value={tokenNetwork} 
                 onChange={(e) => setTokenNetwork(e.target.value)}
+                className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md 
+                  text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="ETH">Ethereum</option>
                 <option value="TRON">Tron</option>
@@ -127,80 +145,62 @@ const AdminDashboard = () => {
                 type="text" 
                 placeholder="Enter token address" 
                 value={tokenAddress} 
-                onChange={(e) => setTokenAddress(e.target.value)} 
+                onChange={(e) => setTokenAddress(e.target.value)}
+                className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md 
+                  text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input 
                 type="text" 
                 placeholder="Enter token name" 
                 value={tokenName} 
-                onChange={(e) => setTokenName(e.target.value)} 
+                onChange={(e) => setTokenName(e.target.value)}
+                className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md 
+                  text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <button onClick={handleAddToken}>Add New Token</button>
+              <button 
+                onClick={handleAddToken}
+                className="w-full py-2 bg-blue-600 text-white rounded-md 
+                  hover:bg-blue-700 transition-colors duration-200"
+              >
+                Add New Token
+              </button>
             </>
           )}
         </div>
 
-        {/* Existing records header */}
-        <div className="records-header">
-          <h3>{viewWallets ? 'Existing Wallet Records' : 'Existing Token Records'}</h3>
-        </div>
-
-        {/* Toggle between viewing wallet and token records */}
-        <div className="tabs">
-          <button
-            className={viewWallets ? 'active' : ''}
-            onClick={() => setViewWallets(true)}
-          >
-            View Wallet Records
-          </button>
-          <button
-            className={!viewWallets ? 'active' : ''}
-            onClick={() => setViewWallets(false)}
-          >
-            View Token Records
-          </button>
-        </div>
-
-        {/* Display existing records */}
-        {viewWallets ? (
-          <div className="records">
-            <table>
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-gray-200 mb-4">
+            {viewWallets ? 'Existing Wallet Records' : 'Existing Token Records'}
+          </h3>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
-                <tr>
-                  <th>Wallet Address</th>
-                  <th>Wallet Name</th>
+                <tr className="bg-gray-700">
+                  <th className="px-4 py-3 text-left text-gray-200">
+                    {viewWallets ? 'Wallet Address' : 'Token Address'}
+                  </th>
+                  <th className="px-4 py-3 text-left text-gray-200">
+                    {viewWallets ? 'Wallet Name' : 'Token Name'}
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {wallets.map((wallet) => (
-                  <tr key={wallet.id}>
-                    <td>{wallet.address}</td>
-                    <td>{wallet.wallet_name}</td>
+                {(viewWallets ? wallets : tokens).map((item) => (
+                  <tr 
+                    key={item.id}
+                    className="border-b border-gray-700 hover:bg-gray-700/50"
+                  >
+                    <td className="px-4 py-3 text-gray-300">{item.address}</td>
+                    <td className="px-4 py-3 text-gray-300">
+                      {viewWallets ? item.wallet_name : item.token_name}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        ) : (
-          <div className="records">
-            <table>
-              <thead>
-                <tr>
-                  <th>Token Address</th>
-                  <th>Token Name</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tokens.map((token) => (
-                  <tr key={token.id}>
-                    <td>{token.address}</td>
-                    <td>{token.token_name}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -144,9 +144,15 @@ function MainContent() {
 }
 
 function App() {
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+  }, []);
+
   return (
     <Router>
-      <MainContent />
+      <div className="min-h-screen bg-gray-900">
+        <MainContent />
+      </div>
     </Router>
   );
 }

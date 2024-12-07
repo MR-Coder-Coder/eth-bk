@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './WalletSummary.css';
 
 function WalletSummary({ transactions, walletAddress, network }) {
   const navigate = useNavigate();
@@ -72,71 +71,79 @@ function WalletSummary({ transactions, walletAddress, network }) {
   };
 
   return (
-    <div className="summary-container">
-      <button 
-        className="back-btn"
-        onClick={() => navigate('/results')}
-      >
-        Back to Transactions
-      </button>
+    <div className="min-h-screen bg-gray-900 p-4">
+      <div className="max-w-7xl mx-auto bg-gray-800 rounded-lg shadow-xl p-6">
+        <button 
+          className="mb-4 px-4 py-2 bg-blue-600 text-gray-100 rounded-md 
+            hover:bg-blue-700 transition-colors duration-200"
+          onClick={() => navigate('/results')}
+        >
+          Back to Transactions
+        </button>
 
-      <div className="network-indicator">
-        Network: {network}
-      </div>
+        <div className="text-gray-300 text-lg mb-6">
+          Network: {network}
+        </div>
 
-      <div className="summary-table-container">
-        <table className="summary-table">
-          <thead>
-            <tr>
-              <th>Address</th>
-              <th>Total Transactions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {generateWalletSummary().map((summary) => (
-              <React.Fragment key={summary.address}>
-                <tr 
-                  onClick={() => toggleExpand(summary.address)}
-                  className={`summary-row ${expandedAddresses.includes(summary.address) ? 'expanded' : ''}`}
-                >
-                  <td>
-                    <div className="expand-icon">
-                      {expandedAddresses.includes(summary.address) ? '▼' : '▶'}
-                    </div>
-                    {summary.address}
-                  </td>
-                  <td>{summary.totalTransactions}</td>
-                </tr>
-                {expandedAddresses.includes(summary.address) && (
-                  <tr className="token-details-row">
-                    <td colSpan="2">
-                      <div className="token-details">
-                        {Object.entries(summary.tokens).map(([token, amounts]) => {
-                          // Only show tokens that have transactions
-                          if (amounts.sent === 0 && amounts.received === 0) return null;
-                          
-                          const netAmount = amounts.received - amounts.sent;
-                          return (
-                            <div key={token} className="token-summary">
-                              <h4>{token}</h4>
-                              <div className="token-amounts">
-                                <p>Sent: {amounts.sent.toFixed(6)}</p>
-                                <p>Received: {amounts.received.toFixed(6)}</p>
-                                <p className={`net-amount ${netAmount > 0 ? 'positive' : netAmount < 0 ? 'negative' : ''}`}>
-                                  Net: {netAmount.toFixed(6)}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })}
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-700">
+                <th className="px-4 py-3 text-left text-gray-200">Address</th>
+                <th className="px-4 py-3 text-left text-gray-200">Total Transactions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {generateWalletSummary().map((summary) => (
+                <React.Fragment key={summary.address}>
+                  <tr 
+                    onClick={() => toggleExpand(summary.address)}
+                    className="border-b border-gray-700 hover:bg-gray-700/50 
+                      cursor-pointer transition-colors duration-200"
+                  >
+                    <td className="px-4 py-3 text-gray-300">
+                      <div className="flex items-center gap-2">
+                        <span className="transform transition-transform duration-200">
+                          {expandedAddresses.includes(summary.address) ? '▼' : '▶'}
+                        </span>
+                        <span className="break-all">{summary.address}</span>
                       </div>
                     </td>
+                    <td className="px-4 py-3 text-gray-300">{summary.totalTransactions}</td>
                   </tr>
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+                  {expandedAddresses.includes(summary.address) && (
+                    <tr className="bg-gray-700/50">
+                      <td colSpan="2" className="px-4 py-3">
+                        <div className="space-y-4">
+                          {Object.entries(summary.tokens).map(([token, amounts]) => {
+                            if (amounts.sent === 0 && amounts.received === 0) return null;
+                            
+                            const netAmount = amounts.received - amounts.sent;
+                            return (
+                              <div key={token} className="bg-gray-700 p-4 rounded-lg">
+                                <h4 className="text-gray-200 font-semibold mb-2">{token}</h4>
+                                <div className="space-y-1 text-gray-300">
+                                  <p>Sent: {amounts.sent.toFixed(6)}</p>
+                                  <p>Received: {amounts.received.toFixed(6)}</p>
+                                  <p className={`font-semibold ${
+                                    netAmount > 0 ? 'text-green-400' : 
+                                    netAmount < 0 ? 'text-red-400' : 'text-gray-300'
+                                  }`}>
+                                    Net: {netAmount.toFixed(6)}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

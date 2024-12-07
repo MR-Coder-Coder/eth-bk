@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import './WalletForm.css';
+
 
 function WalletForm({ onSubmit }) {
   const [walletAddress, setWalletAddress] = useState('');
@@ -82,57 +82,85 @@ function WalletForm({ onSubmit }) {
   const currentTokens = network ? walletAddresses[network]?.tokens || [] : [];
 
   return (
-    <div className="wallet-box">
-      <form className="wallet-form" onSubmit={handleSubmit}>
-        <div className="form-group-row">
+    <div className="bg-gray-800 p-5 rounded-lg shadow-lg">
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-4">
           {/* Network Selection */}
-          <div className="form-group">
-            <label htmlFor="network">Network</label>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="network" className="text-gray-300">
+              Network
+            </label>
             <select
               id="network"
               value={network}
               onChange={handleNetworkChange}
               required
+              className="p-2.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 w-full 
+                focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
-              <option value="">Select Network</option>
+              <option value="" className="bg-gray-700">Select Network</option>
               {networks.map((net) => (
-                <option key={net.value} value={net.value}>
+                <option 
+                  key={net.value} 
+                  value={net.value}
+                  className="bg-gray-700"
+                >
                   {net.label}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="walletAddress">Wallet</label>
+          {/* Wallet Selection */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="walletAddress" className="text-gray-300">
+              Wallet
+            </label>
             <select
               id="walletAddress"
               value={walletAddress}
               onChange={(e) => setWalletAddress(e.target.value)}
               required
               disabled={!network}
+              className="p-2.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 w-full 
+                focus:ring-blue-500 focus:border-blue-500 outline-none
+                disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
             >
-              <option value="">Select Wallet</option>
+              <option value="" className="bg-gray-700">Select Wallet</option>
               {currentWallets.map((wallet, index) => (
-                <option key={index} value={wallet.wallet_address || ''}>
+                <option 
+                  key={index} 
+                  value={wallet.wallet_address || ''}
+                  className="bg-gray-700"
+                >
                   {wallet.wallet_name || 'Unnamed Wallet'}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="token">Token</label>
+          {/* Token Selection */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="token" className="text-gray-300">
+              Token
+            </label>
             <select
               id="token"
               value={token}
               onChange={(e) => setToken(e.target.value)}
               required
               disabled={!network}
+              className="p-2.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 w-full 
+                focus:ring-blue-500 focus:border-blue-500 outline-none
+                disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
             >
-              <option value="">Select Token</option>
+              <option value="" className="bg-gray-700">Select Token</option>
               {currentTokens.map((token, index) => (
-                <option key={index} value={token}>
+                <option 
+                  key={index} 
+                  value={token}
+                  className="bg-gray-700"
+                >
                   {token}
                 </option>
               ))}
@@ -140,7 +168,14 @@ function WalletForm({ onSubmit }) {
           </div>
         </div>
 
-        <button className="submit-btn" type="submit">Fetch Transactions</button>
+        <button 
+          type="submit" 
+          className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md 
+            hover:bg-blue-700 transition-colors duration-300
+            disabled:bg-gray-600 disabled:cursor-not-allowed"
+        >
+          Fetch Transactions
+        </button>
       </form>
     </div>
   );
