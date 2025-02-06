@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CSVLink } from 'react-csv';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/config'; // Make sure this import exists
 
 function ResultsPage({ transactions, walletAddress, network }) {
   const [expandedRows, setExpandedRows] = useState([]);
+  const [knownWallets, setKnownWallets] = useState({});
   const navigate = useNavigate();
+
+  // Fetch known wallets on component mount
+  useEffect(() => {
+    const fetchKnownWallets = async () => {
+      const walletsSnapshot = await getDocs(collection(db, 'eth_known_wallets'));
+      const walletsMap = {};
+      walletsSnapshot.forEach(doc => {
+        const data = doc.data();
+        walletsMap[data.wallet_address.toLowerCase()] = {
+          sage_name: data.sage_name,
+          sage_nc: data.sage_nc
+        };
+      });
+      setKnownWallets(walletsMap);
+    };
+    fetchKnownWallets();
+  }, []);
 
   // Dynamic headers based on network
   const headers = [
@@ -41,6 +60,24 @@ function ResultsPage({ transactions, walletAddress, network }) {
     { label: 'Gas', key: 'gas' },
     { label: 'Gas Price', key: 'gasPrice' },
     { label: 'Gas Used', key: 'gasUsed' },
+  ];
+
+  const sageHeaders = [
+    { label: 'Type', key: 'type' },
+    { label: 'Account Reference', key: 'accountRef' },
+    { label: 'Nominal A/C Ref', key: 'nominalRef' },
+    { label: 'Department', key: 'department' },
+    { label: 'Date', key: 'date' },
+    { label: 'Reference', key: 'reference' },
+    { label: 'Details', key: 'details' },
+    { label: 'Net Amount', key: 'netAmount' },
+    { label: 'T/C', key: 'tc' },
+    { label: 'Tax Amount', key: 'taxAmount' },
+    { label: 'Exchange Rate', key: 'exchangeRate' },
+    { label: 'Ex.Ref', key: 'exRef' },
+    { label: 'Username', key: 'username' },
+    { label: 'Project Ref', key: 'projectRef' },
+    { label: 'Cost Code', key: 'costCode' }
   ];
 
   const toggleRowExpansion = (index) => {
@@ -110,6 +147,58 @@ function ResultsPage({ transactions, walletAddress, network }) {
       };
     });
 
+  const formatSageData = (transactions) => {
+    return transactions.map(tx => {
+      const fromAddress = tx.from.toLowerCase();
+      const toAddress = tx.to.toLowerCase();
+      const direction = fromAddress === walletAddress.toLowerCase() ? 'Out' : 'In';
+      const counterpartyAddress = direction === 'Out' ? toAddress : fromAddress;
+      const knownWallet = knownWallets[counterpartyAddress];
+      
+      // Format date as DD/MM/YYYY
+      const txDate = new Date(tx.timeStamp * 1000);
+      const formattedDate = `${txDate.getDate().toString().padStart(2, '0')}/${(txDate.getMonth() + 1).toString().padStart(2, '0')}/${txDate.getFullYear()}`;
+
+      // Determine transaction type and account reference
+      let type;
+      let accountRef;
+
+      if (knownWallet) {
+        if (knownWallet.sage_name) {
+          // Known wallet with sage_name - use SA/SP
+          type = direction === 'Out' ? 'SP' : 'SA';
+          accountRef = knownWallet.sage_name;
+        } else if (knownWallet.sage_nc) {
+          // Known wallet with sage_nc - use BP/BR
+          type = direction === 'Out' ? 'BP' : 'BR';
+          accountRef = knownWallet.sage_nc;
+        }
+      } else {
+        // Unknown wallet - use BP/BR with default reference
+        type = direction === 'Out' ? 'BP' : 'BR';
+        accountRef = '9999';
+      }
+
+      return {
+        type,
+        accountRef,
+        nominalRef: '1201',
+        department: '0',
+        date: formattedDate,
+        reference: direction,
+        details: tx.hash,
+        netAmount: Number(tx.adjustedValue).toFixed(2),
+        tc: '0',
+        taxAmount: '0',
+        exchangeRate: '1',
+        exRef: tx.transactionType,
+        username: 'admin',
+        projectRef: '',
+        costCode: ''
+      };
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 p-4">
       <div className="max-w-7xl mx-auto bg-gray-800 rounded-lg shadow-xl">
@@ -161,6 +250,16 @@ function ResultsPage({ transactions, walletAddress, network }) {
                 hover:bg-blue-700 transition-colors duration-200"
             >
               Download CSV
+            </CSVLink>
+
+            <CSVLink
+              data={formatSageData(transactionsWithAdditionalInfo)}
+              headers={sageHeaders}
+              filename={`${network.toLowerCase()}_sage_import.csv`}
+              className="px-4 py-2 bg-purple-600 text-gray-100 rounded-md 
+                hover:bg-purple-700 transition-colors duration-200"
+            >
+              Download Sage Import
             </CSVLink>
           </div>
         </div>
